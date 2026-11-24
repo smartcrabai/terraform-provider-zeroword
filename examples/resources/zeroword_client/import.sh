@@ -1,0 +1,1 @@
+terraform import zeroword_client.web cli_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

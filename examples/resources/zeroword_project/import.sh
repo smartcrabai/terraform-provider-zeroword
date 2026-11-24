@@ -1,0 +1,1 @@
+terraform import zeroword_project.app prj_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

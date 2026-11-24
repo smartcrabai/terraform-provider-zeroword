@@ -1,0 +1,1 @@
+terraform import zeroword_environment.staging env_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

@@ -1,0 +1,1 @@
+terraform import zeroword_domain.login dom_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
