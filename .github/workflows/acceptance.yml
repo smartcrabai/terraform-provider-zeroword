@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   acceptance:
-    runs-on: arc-runner-smartcrabai
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     concurrency: acceptance
     steps:
