@@ -1,0 +1,1 @@
+terraform import zeroword_connection.google con_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

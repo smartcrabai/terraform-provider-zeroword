@@ -1,0 +1,30 @@
+name: Acceptance
+
+# Runs the same tests against a real Management API (staging by default).
+# Creates and destroys a Project named tfacc-* in the given Workspace.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency: acceptance
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
+        with:
+          go-version-file: go.mod
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4
+        with:
+          terraform_version: latest
+          terraform_wrapper: false
+      - run: go test -v -timeout 30m ./internal/provider
+        env:
+          TF_ACC: "1"
+          ZEROWORD_API_KEY: ${{ secrets.ZEROWORD_ACC_API_KEY }}
+          ZEROWORD_BASE_URL: ${{ vars.ZEROWORD_ACC_BASE_URL || 'https://api.staging.zeroword.smartcrab.ai/v1' }}
+          ZEROWORD_ACC_WORKSPACE_ID: ${{ vars.ZEROWORD_ACC_WORKSPACE_ID }}
