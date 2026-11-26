@@ -175,7 +175,7 @@ func (f *fakeAPI) create(w http.ResponseWriter, r *http.Request, collection stri
 		}
 	case "clients":
 		if body, err = decode(r, "environment_id", "client_type", "name", "redirect_uris", "post_logout_redirect_uris",
-			"allowed_origins", "allowed_scopes", "allowed_resources", "token_endpoint_auth_method", "require_pkce", "mobile_app"); err == nil {
+			"allowed_origins", "allowed_scopes", "allowed_resources", "token_endpoint_auth_method", "require_pkce", "require_nonce", "mobile_app"); err == nil {
 			o = object{"id": f.nextID("cli"), "status": "active", "mobile_app": nil}
 			if body["token_endpoint_auth_method"] != "none" {
 				o["client_secret"] = "client-secret-" + fmt.Sprint(f.seq)
@@ -228,7 +228,7 @@ func (f *fakeAPI) patch(w http.ResponseWriter, r *http.Request, collection, id s
 		"projects":     {"name", "slug"},
 		"environments": {"name", "status"},
 		"clients": {"name", "redirect_uris", "post_logout_redirect_uris", "allowed_origins", "allowed_scopes",
-			"allowed_resources", "token_endpoint_auth_method", "require_pkce", "status", "mobile_app"},
+			"allowed_resources", "token_endpoint_auth_method", "require_pkce", "require_nonce", "status", "mobile_app"},
 		"connections": {"issuer", "provider_client_id", "provider_client_secret", "scopes", "profile_mapping", "status", "owner_confirmed"},
 		"domains":     {"rp_enabled"},
 		"webhooks":    {"url", "event_types", "status"},

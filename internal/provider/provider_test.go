@@ -110,7 +110,7 @@ resource "zeroword_environment_settings" "staging" {
 
 func TestClientsThemeAndSecrets(t *testing.T) {
 	_, workspaceID := setup(t)
-	config := func(redirect, methods string) string {
+	config := func(redirect, methods, nonce string) string {
 		return baseConfig(workspaceID, "clients") + fmt.Sprintf(`
 resource "zeroword_client" "spa" {
   environment_id             = zeroword_environment.staging.id
@@ -120,6 +120,7 @@ resource "zeroword_client" "spa" {
   redirect_uris              = [%[1]q]
   allowed_origins            = ["https://app.example.com"]
   allowed_scopes             = ["openid", "email", "offline_access"]
+  %[3]s
 }
 
 resource "zeroword_client" "bff" {
@@ -145,13 +146,14 @@ resource "zeroword_environment_theme" "staging" {
     defaultLocale = "ja"
   })
 }
-`, redirect, methods)
+`, redirect, methods, nonce)
 	}
 	resource.Test(t, testCase(t,
 		resource.TestStep{
-			Config: config("https://app.example.com/callback", `["email_otp", "passkey"]`),
+			Config: config("https://app.example.com/callback", `["email_otp", "passkey"]`, ""),
 			Check: resource.ComposeAggregateTestCheckFunc(
 				resource.TestCheckResourceAttr("zeroword_client.spa", "redirect_uris.#", "1"),
+				resource.TestCheckResourceAttr("zeroword_client.spa", "require_nonce", "true"),
 				resource.TestCheckNoResourceAttr("zeroword_client.spa", "client_secret"),
 				resource.TestCheckResourceAttrSet("zeroword_client.bff", "client_secret"),
 				resource.TestCheckResourceAttr("zeroword_client.bff", "status", "disabled"),
@@ -159,7 +161,7 @@ resource "zeroword_environment_theme" "staging" {
 			),
 		},
 		resource.TestStep{
-			Config: config("https://app.example.com/auth/callback", `["passkey", "email_otp"]`),
+			Config: config("https://app.example.com/auth/callback", `["passkey", "email_otp"]`, "require_nonce = false"),
 			ConfigPlanChecks: resource.ConfigPlanChecks{PreApply: []plancheck.PlanCheck{
 				plancheck.ExpectResourceAction("zeroword_client.spa", plancheck.ResourceActionUpdate),
 				plancheck.ExpectResourceAction("zeroword_environment_theme.staging", plancheck.ResourceActionUpdate),
@@ -167,6 +169,7 @@ resource "zeroword_environment_theme" "staging" {
 			}},
 			Check: resource.ComposeAggregateTestCheckFunc(
 				resource.TestCheckTypeSetElemAttr("zeroword_client.spa", "redirect_uris.*", "https://app.example.com/auth/callback"),
+				resource.TestCheckResourceAttr("zeroword_client.spa", "require_nonce", "false"),
 				// The secret is only returned at creation and must survive updates and refreshes.
 				resource.TestCheckResourceAttrSet("zeroword_client.bff", "client_secret"),
 			),

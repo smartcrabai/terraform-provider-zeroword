@@ -138,6 +138,7 @@ type OAuthClientSettings struct {
 	AllowedResources        []string `json:"allowed_resources"`
 	TokenEndpointAuthMethod string   `json:"token_endpoint_auth_method"`
 	RequirePKCE             bool     `json:"require_pkce"`
+	RequireNonce            bool     `json:"require_nonce"`
 }
 
 type OAuthClient struct {

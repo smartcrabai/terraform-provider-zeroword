@@ -35,6 +35,7 @@ type clientModel struct {
 	AllowedResources        types.Set    `tfsdk:"allowed_resources"`
 	TokenEndpointAuthMethod types.String `tfsdk:"token_endpoint_auth_method"`
 	RequirePKCE             types.Bool   `tfsdk:"require_pkce"`
+	RequireNonce            types.Bool   `tfsdk:"require_nonce"`
 	Status                  types.String `tfsdk:"status"`
 	MobileApp               types.Object `tfsdk:"mobile_app"`
 	ClientSecret            types.String `tfsdk:"client_secret"`
@@ -104,6 +105,12 @@ func (r *clientResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 				Computed:    true,
 				Default:     booldefault.StaticBool(true),
 			},
+			"require_nonce": schema.BoolAttribute{
+				Description: "Whether an `openid` authorization request must carry a `nonce`. Set `false` only for public clients that cannot send one (for example MCP clients); PKCE S256, `state` and the registered redirect URI stay required. Requires Zeroword 0.7.0 or later. Defaults to `true`.",
+				Optional:    true,
+				Computed:    true,
+				Default:     booldefault.StaticBool(true),
+			},
 			"status": schema.StringAttribute{
 				Description: "`active` or `disabled`. Defaults to `active`.",
 				Optional:    true,
@@ -149,6 +156,7 @@ func (m *clientModel) settings(ctx context.Context, diags *diag.Diagnostics) zer
 		AllowedResources:        stringSlice(ctx, m.AllowedResources, diags),
 		TokenEndpointAuthMethod: m.TokenEndpointAuthMethod.ValueString(),
 		RequirePKCE:             m.RequirePKCE.ValueBool(),
+		RequireNonce:            m.RequireNonce.ValueBool(),
 	}
 }
 
@@ -180,6 +188,7 @@ func (m *clientModel) set(c *zeroword.OAuthClient, diags *diag.Diagnostics) {
 	m.AllowedResources = stringSet(c.AllowedResources)
 	m.TokenEndpointAuthMethod = types.StringValue(c.TokenEndpointAuthMethod)
 	m.RequirePKCE = types.BoolValue(c.RequirePKCE)
+	m.RequireNonce = types.BoolValue(c.RequireNonce)
 	m.Status = types.StringValue(c.Status)
 	if c.MobileApp == nil {
 		m.MobileApp = types.ObjectNull(mobileAppAttrTypes)
