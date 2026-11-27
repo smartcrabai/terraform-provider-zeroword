@@ -44,6 +44,7 @@ resource "zeroword_client" "web" {
 - `mobile_app` (Attributes) Native app settings of a `react_native` client. (see [below for nested schema](#nestedatt--mobile_app))
 - `post_logout_redirect_uris` (Set of String) Allowed post-logout redirect URIs (max 50). Defaults to empty.
 - `redirect_uris` (Set of String) Allowed redirect URIs (max 50). Defaults to empty.
+- `require_nonce` (Boolean) Whether an `openid` authorization request must carry a `nonce`. Set `false` only for public clients that cannot send one (for example MCP clients); PKCE S256, `state` and the registered redirect URI stay required. Requires Zeroword 0.7.0 or later. Defaults to `true`.
 - `require_pkce` (Boolean) Kept for compatibility; Zeroword requires PKCE S256 for every client. Defaults to `true`.
 - `status` (String) `active` or `disabled`. Defaults to `active`.
 
